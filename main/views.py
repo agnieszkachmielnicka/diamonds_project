@@ -13,5 +13,6 @@ class BasketViewSet(viewsets.ModelViewSet):
 
     serializer_class = BasketSerializer
     queryset = Basket.objects.all()
+    lookup_field = 'user'
 
 

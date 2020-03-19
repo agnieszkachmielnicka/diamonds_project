@@ -12,7 +12,8 @@ class ShapeSerializer(serializers.ModelSerializer):
 
 class BasketSerializer(serializers.ModelSerializer):
 
-    user = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    # user = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    items = ShapeSerializer(many=True)
 
     class Meta:
         model = Basket
