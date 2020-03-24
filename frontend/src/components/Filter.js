@@ -32,7 +32,7 @@ class Filter extends React.Component {
 
         const images = this.state.data ? this.state.data.map(image => {
             return (
-                <Shape src={image.image} type={image.type} key={image.id}/>
+                <Shape draggable='true' src={image.image} type={image.type} id={image.id}/>
             )
         }) : <div></div>
 

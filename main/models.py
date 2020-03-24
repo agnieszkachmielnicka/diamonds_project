@@ -8,7 +8,7 @@ class Shape(models.Model):
 
 class Basket(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    items = models.ManyToManyField(Shape, through="BasketItems")
+    items = models.ManyToManyField(Shape, through="BasketItems", blank=True)
 
 
 class BasketItems(models.Model):

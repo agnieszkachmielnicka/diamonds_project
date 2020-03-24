@@ -1,5 +1,6 @@
+from django.contrib.auth.models import User
 from rest_framework import viewsets
-from main.models import Shape, Basket
+from main.models import Shape, Basket, BasketItems
 from main.serializers import ShapeSerializer, BasketSerializer
 
 
@@ -13,6 +14,6 @@ class BasketViewSet(viewsets.ModelViewSet):
 
     serializer_class = BasketSerializer
     queryset = Basket.objects.all()
-    lookup_field = 'user'
+    lookup_field = 'user__username'
 
 
