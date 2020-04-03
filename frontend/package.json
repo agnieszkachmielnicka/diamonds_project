@@ -28,9 +28,11 @@
   },
   "dependencies": {
     "antd": "^4.0.2",
+    "css-loader": "^3.4.2",
     "materialize-css": "^1.0.0-rc.2",
     "react-draggable": "^4.2.0",
     "react-redux": "^7.2.0",
-    "react-router": "^5.1.2"
+    "react-router": "^5.1.2",
+    "style-loader": "^1.1.3"
   }
 }

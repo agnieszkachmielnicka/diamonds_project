@@ -7,6 +7,7 @@ class Shape extends React.Component {
         const target = e.target
         console.log(target)
         e.dataTransfer.setData('shape_id', target.id)
+        e.dataTransfer.setData('image_src', target.src)
     }
 
     handleDragOver = (e) => {

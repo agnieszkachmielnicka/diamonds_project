@@ -3,7 +3,7 @@ import React from 'react';
 
 const Column = (props) => {
     return (
-        <div className="col s6" onDrop={props.onDrop} onDragOver={props.onDragOver}>
+        <div id={props.id} className={`col s6 ${props.style}`}  onDrop={props.onDrop} onDragOver={props.onDragOver}>
             {props.children}
         </div>
     )

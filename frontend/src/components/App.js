@@ -5,6 +5,7 @@ import * as actions from '../store/actions/auth';
 import { BrowserRouter as Router } from 'react-router-dom';
 import BaseRouter from './Routers';
 import Navbar from './Navbar'
+import '../../static/frontend/css/main.css'
 
 class App extends Component {
 
