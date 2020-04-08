@@ -2002,7 +2002,7 @@ module.exports = {
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".basket {\r\n    height: 100vh;\r\n    border: 2px solid black;\r\n}\r\n\r\n.main-container {\r\n    width: 100%;\r\n}", ""]);
+exports.push([module.i, ".basket {\r\n    height: 100vh;\r\n    border: 2px solid black;\r\n}\r\n\r\n.main-container {\r\n    width: 100%;\r\n}\r\n\r\n.delete-icon {\r\n    text-align: right;\r\n}\r\n\r\n.add-button {\r\n    display: inline-block;\r\n    margin: 5px;\r\n}", ""]);
 // Exports
 module.exports = exports;
 
@@ -37721,7 +37721,9 @@ __webpack_require__.r(__webpack_exports__);
 var Filter = function Filter(props) {
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
-  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, props.name), props.children);
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+    className: "add-button"
+  }, props.name), props.children);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Filter);
@@ -37791,11 +37793,6 @@ var Home = /*#__PURE__*/function (_React$Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Home).call(this, props));
 
     _defineProperty(_assertThisInitialized(_this), "getData", function () {
-      // const token = `Token ` + localStorage.getItem('token')
-      // console.log(token)
-      // const headers = {
-      //     'Authorization': token
-      // }
       axios__WEBPACK_IMPORTED_MODULE_3___default.a.get('http://localhost:8000/main/api/' + 'shapes' + '/').then(function (res) {
         console.log(res.data);
 
@@ -37857,6 +37854,52 @@ var Home = /*#__PURE__*/function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "deleteOneFromBasket", function (basket_id, item, delete_forever) {
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.put('http://localhost:8000/main/api/basket_items/' + basket_id + '/', {
+        item: item.id,
+        delete_forever: delete_forever
+      }).then(function (res) {
+        console.log(res.data);
+        item.quantity = res.data.quantity;
+
+        _this.setState(function (state) {
+          var items = state.items;
+          items[items.indexOf(item)] = item;
+          return {
+            items: items
+          };
+        });
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "delateFromBasket", function (basket_id, item, delete_forever) {
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.put('http://localhost:8000/main/api/basket_items/' + basket_id + '/', {
+        item: item.id,
+        delete_forever: delete_forever
+      }).then(function (res) {
+        _this.setState(function (state) {
+          var items = state.items;
+          return {
+            items: items.filter(function (it) {
+              return it != item;
+            })
+          };
+        });
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function (e, item) {
+      if (e.target.innerText == 'delete_forever' || item.quantity === 1) {
+        _this.delateFromBasket(_this.state.basket_id, item, true);
+      } else {
+        _this.deleteOneFromBasket(_this.state.basket_id, item, false);
+      }
+    });
+
     _defineProperty(_assertThisInitialized(_this), "handleDrop", function (e) {
       e.preventDefault();
       var shape_id = e.dataTransfer.getData('shape_id');
@@ -37873,23 +37916,55 @@ var Home = /*#__PURE__*/function (_React$Component) {
       e.preventDefault();
     });
 
+    _defineProperty(_assertThisInitialized(_this), "handleChange", function () {
+      var type = _this.fileInput.current.files[0].name.split('.')[1];
+
+      var form_data = new FormData();
+      form_data.append('image', _this.fileInput.current.files[0], _this.fileInput.current.files[0].name);
+      form_data.append('type', type);
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.post('http://localhost:8000/main/api/shapes/', form_data, {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }).then(function (res) {
+        console.log(res.data);
+
+        _this.setState(function (state) {
+          var shapes = state.data;
+          shapes.push(res.data);
+          return {
+            data: shapes
+          };
+        });
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    });
+
     _this.state = {
       items: [],
       basket_id: null,
       data: null
     };
+    _this.fileInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     return _this;
   }
 
   _createClass(Home, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.getBasket(this.props.username);
+      var _this2 = this;
+
       this.getData();
+      setTimeout(function () {
+        if (localStorage.getItem('token') !== null) _this2.getBasket(localStorage.getItem('user'));
+      }, 1000);
     }
   }, {
     key: "render",
     value: function render() {
+      var _this3 = this;
+
       var items = this.state.items ? this.state.items.map(function (item) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           className: "row"
@@ -37899,7 +37974,21 @@ var Home = /*#__PURE__*/function (_React$Component) {
           id: item.id,
           key: item.id,
           quantity: item.quantity
-        }));
+        }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+          className: "col right"
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+          onClick: function onClick(e) {
+            return _this3.handleClick(e, item);
+          }
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+          className: "material-icons"
+        }, "remove")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+          onClick: function onClick(e) {
+            return _this3.handleClick(e, item);
+          }
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+          className: "material-icons"
+        }, "delete_forever"))));
       }) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
       var images = this.state.data ? this.state.data.map(function (image) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Shape__WEBPACK_IMPORTED_MODULE_4__["default"], {
@@ -37917,13 +38006,27 @@ var Home = /*#__PURE__*/function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Filter__WEBPACK_IMPORTED_MODULE_2__["default"], {
         id: "filter-1",
         name: "Shape"
-      }, images)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Column__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      }, this.props.isAuthenticated && react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "add-button"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "file-field input-field"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+        className: "btn-floating waves-effect btn-medium waves-light blue"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+        className: "material-icons"
+      }, "add"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "file",
+        ref: this.fileInput,
+        onChange: this.handleChange
+      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "row"
+      }, images))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Column__WEBPACK_IMPORTED_MODULE_1__["default"], {
         id: "col-right",
         user: this.props.username,
         onDrop: this.handleDrop,
         onDragOver: this.handleDragOver,
         style: "basket"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Basket"), items)));
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Basket"), this.props.isAuthenticated && items)));
     }
   }]);
 

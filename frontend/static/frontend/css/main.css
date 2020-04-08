@@ -6,3 +6,12 @@
 .main-container {
     width: 100%;
 }
+
+.delete-icon {
+    text-align: right;
+}
+
+.add-button {
+    display: inline-block;
+    margin: 5px;
+}

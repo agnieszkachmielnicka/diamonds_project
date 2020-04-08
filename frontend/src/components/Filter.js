@@ -4,8 +4,9 @@ const Filter = (props) => {
 
         return (
             <div className="container">
-                <p>{props.name}</p>
+                <p className='add-button'>{props.name}</p>     
                 {props.children}
+                
             </div>
         )
 }

@@ -14,20 +14,18 @@ class Home extends React.Component {
             basket_id: null,
             data: null
         }
-
+        this.fileInput = React.createRef();
     }
 
     componentDidMount() {
-        this.getBasket(this.props.username)
         this.getData()
+        setTimeout(() => {
+            if (localStorage.getItem('token') !== null)
+                this.getBasket(localStorage.getItem('user'))
+        }, 1000)       
     }
 
     getData = () => {
-        // const token = `Token ` + localStorage.getItem('token')
-        // console.log(token)
-        // const headers = {
-        //     'Authorization': token
-        // }
         axios.get('http://localhost:8000/main/api/' + 'shapes' + '/')
         .then(res => {
             console.log(res.data)
@@ -89,6 +87,55 @@ class Home extends React.Component {
         })
     }
 
+    deleteOneFromBasket = (basket_id, item, delete_forever) => {
+        axios.put('http://localhost:8000/main/api/basket_items/' + basket_id + '/', 
+        {
+            item: item.id,
+            delete_forever: delete_forever
+        })
+        .then(res => {
+            console.log(res.data)
+            item.quantity = res.data.quantity
+            this.setState((state) => {
+                var items = state.items
+                items[items.indexOf(item)] = item
+                return {
+                    items: items
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    delateFromBasket = (basket_id, item, delete_forever) => {
+        axios.put('http://localhost:8000/main/api/basket_items/' + basket_id + '/', 
+        {
+            item: item.id,
+            delete_forever: delete_forever
+        })
+        .then(res => {
+            this.setState((state) => {
+                var items = state.items
+                return {
+                    items: items.filter(it => { return it != item})
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    handleClick = (e, item) => {
+        if(e.target.innerText == 'delete_forever' || item.quantity === 1) {
+            this.delateFromBasket(this.state.basket_id, item, true)
+        } else {
+            this.deleteOneFromBasket(this.state.basket_id, item, false)
+        }
+    }
+
     handleDrop = (e) => {
         e.preventDefault();
         const shape_id = e.dataTransfer.getData('shape_id');
@@ -103,6 +150,30 @@ class Home extends React.Component {
         e.preventDefault();
     }
 
+    handleChange = () => {
+        const type = this.fileInput.current.files[0].name.split('.')[1]
+        let form_data = new FormData();
+        form_data.append('image', this.fileInput.current.files[0], this.fileInput.current.files[0].name);
+        form_data.append('type', type);
+        axios.post('http://localhost:8000/main/api/shapes/', 
+        form_data, {headers: {
+            'content-type': 'multipart/form-data'
+          }})
+        .then(res => {
+            console.log(res.data)
+            this.setState(state => {
+                var shapes = state.data
+                shapes.push(res.data)
+                return {
+                    data: shapes
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
     
     render() {
       
@@ -112,6 +183,10 @@ class Home extends React.Component {
                             return (
                                 <div className="row">
                                     <Shape draggable='false' src={item.image} id={item.id} key={item.id} quantity={item.quantity}/>
+                                    <div className="col right">
+                                        <a onClick={(e) => this.handleClick(e, item)}><i className="material-icons">remove</i></a>
+                                        <a onClick={(e) => this.handleClick(e, item)}><i className="material-icons">delete_forever</i></a>
+                                    </div>
                                 </div>
                             )
                         })
@@ -130,12 +205,29 @@ class Home extends React.Component {
                 <div className="row main-container">
                     <Column id='col-left'>
                         <Filter id="filter-1" name="Shape">
-                            {images}
+                            {
+                                this.props.isAuthenticated && 
+                                (
+                                    <div className='add-button'>                                
+                                        <div className="file-field input-field">
+                                            <a className="btn-floating waves-effect btn-medium waves-light blue"><i className="material-icons">add</i>
+                                                <input type="file" ref={this.fileInput} onChange={this.handleChange}/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            <div className='row'>
+                                {images}
+                            </div>
                         </Filter>
                     </Column>
                     <Column id='col-right' user={this.props.username} onDrop={this.handleDrop} onDragOver={this.handleDragOver} style='basket'>
                         <h4>Basket</h4>
-                        {items}
+                        {
+                            this.props.isAuthenticated &&
+                            items
+                        }       
                     </Column>
                 </div>
             </div>
