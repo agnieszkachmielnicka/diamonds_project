@@ -1,0 +1,22 @@
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <h4>Basket for user {{user}}</h4>
+        <table  cellspacing="30">
+        {% for item in basket_items %}
+            <tr>
+                <th><img src="cid:img{{item.item.id}}" height='50' width='50'></th>
+                <th>{% get_image_name item.item.image %}</th>
+                <th><strong>{{item.quantity}}</strong></th>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

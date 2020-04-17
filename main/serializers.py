@@ -14,6 +14,7 @@ class ShapeSerializer(serializers.ModelSerializer):
         fields = ('id', 'image', 'type', 'quantity')
 
     def get_quantity(self, obj):
+        print(self.context)
         request = self.context['request']
         header_token = request.META.get('HTTP_AUTHORIZATION', None)
         if header_token is not None:

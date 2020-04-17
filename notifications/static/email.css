@@ -1,0 +1,12 @@
+.image-name {
+    display: inline-block;
+    position: relative;
+    bottom: 20px;
+    margin: 40px;
+}
+
+.quantity {
+    display: inline-block;
+    position: relative;
+    bottom: 20px;
+}

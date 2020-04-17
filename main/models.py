@@ -9,6 +9,7 @@ class Shape(models.Model):
 class Basket(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     items = models.ManyToManyField(Shape, through="BasketItems", blank=True)
+    has_changed = models.BooleanField(default=False)
 
 
 class BasketItems(models.Model):

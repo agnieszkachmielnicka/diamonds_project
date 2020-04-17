@@ -1,3 +1,7 @@
+from re import sub
+
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -13,6 +17,8 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
 
 class BasketViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [IsAuthenticated]
 
     serializer_class = BasketSerializer
     queryset = Basket.objects.all()
@@ -37,6 +43,8 @@ class BasketItemDetailViewSet(APIView):
         serializer = BasketItemSerializer(basket_item, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            basket.has_changed = True
+            basket.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -44,6 +52,8 @@ class BasketItemDetailViewSet(APIView):
         item = Shape.objects.get(id=request.data['item'])
         basket = Basket.objects.get(id=pk)
         basket_item = self.get_or_create(basket, item)
+        basket.has_changed = True
+        basket.save()
         if request.data['delete_forever']:
             basket_item.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -54,3 +64,42 @@ class BasketItemDetailViewSet(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CartStateViewSet(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        header_token = request.META.get('HTTP_AUTHORIZATION', None)
+        if header_token is not None:
+            try:
+                token = sub('Token ', '', request.META.get('HTTP_AUTHORIZATION', None))
+                token_obj = Token.objects.get(key=token)
+                user = token_obj.user
+            except Token.DoesNotExist:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            basket = Basket.objects.get(user=user)
+            request.data['user'] = user
+            serializer = BasketSerializer(basket, context={'request': request})
+            return Response(serializer.data)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class ClearCartViewSet(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        header_token = request.META.get('HTTP_AUTHORIZATION', None)
+        if header_token is not None:
+            try:
+                token = sub('Token ', '', request.META.get('HTTP_AUTHORIZATION', None))
+                token_obj = Token.objects.get(key=token)
+                user = token_obj.user
+            except Token.DoesNotExist:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            basket = Basket.objects.get(user=user)
+            BasketItems.objects.filter(basket=basket).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)

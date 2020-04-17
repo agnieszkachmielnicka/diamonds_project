@@ -3,6 +3,7 @@ import Column from "./Column";
 import Filter from './Filter';
 import axios from 'axios';
 import Shape from './Shape';
+import Modal from './Modal';
 import {connect} from 'react-redux';
 
 class Home extends React.Component {
@@ -12,7 +13,9 @@ class Home extends React.Component {
         this.state = {
             items: [],
             basket_id: null,
-            data: null
+            data: null,
+            show: false,
+            share_email: null
         }
         this.fileInput = React.createRef();
     }
@@ -174,6 +177,41 @@ class Home extends React.Component {
         })
     }
 
+    showModal = () => {
+        this.setState({
+            show: true
+        })
+    }
+
+    hideModal = () => {
+        this.setState({
+            show: false
+        })
+    }
+
+    handleEmail = (e) => {
+        this.setState({
+            share_email: e.target.value
+        })
+    }
+
+    shareBasket = () => {
+        this.hideModal()
+        const token = `Token ` + localStorage.getItem('token')
+        const headers = {
+            'Authorization': token
+        }
+        axios.post('http://localhost:8000/notifications/api/share/', 
+        {
+            email: this.state.share_email
+        }, {'headers': headers})
+        .then(res => {
+            console.log(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })    
+    }
     
     render() {
       
@@ -229,6 +267,23 @@ class Home extends React.Component {
                             items
                         }       
                     </Column>
+                    <Modal show={this.state.show} handleClose={this.hideModal}>
+                        <div className="input-field share-email">
+                            <input id="email" type="email" className="validate" onChange={this.handleEmail}/>
+                            <label htmlFor="email">Email</label>
+                        </div>
+                        <button className="btn waves-effect btn-small waves-light blue right modal-share-button" onClick={this.shareBasket}>Share
+                            <i className="material-icons right">send</i>
+                        </button>
+                    </Modal>
+                    {
+                        this.props.isAuthenticated &&
+                        (
+                            <button className="btn waves-effect waves-light blue right share-button" onClick={this.showModal}>Share
+                                <i className="material-icons right">send</i>
+                            </button>
+                        )
+                    }
                 </div>
             </div>
         )

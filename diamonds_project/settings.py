@@ -38,8 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend',
-    'main',
     'rest_auth',
     'rest_auth.registration',
     'rest_framework',
@@ -47,7 +45,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'corsheaders'
+    'corsheaders',
+    'frontend',
+    'main',
+    'notifications',
 ]
 
 SITE_ID = 1
@@ -143,6 +144,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+ADMINS = [('agnieszka', 'agnieszka@chmielnicka.com.pl'), ]
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -153,3 +156,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+#EMAIL SENDING
+
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'diamondsapplication@gmail.com'
+EMAIL_HOST_PASSWORD = 'TD5rySwBgC8BTfQ'

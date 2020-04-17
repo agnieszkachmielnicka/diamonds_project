@@ -2002,7 +2002,7 @@ module.exports = {
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".basket {\r\n    height: 100vh;\r\n    border: 2px solid black;\r\n}\r\n\r\n.main-container {\r\n    width: 100%;\r\n}\r\n\r\n.delete-icon {\r\n    text-align: right;\r\n}\r\n\r\n.add-button {\r\n    display: inline-block;\r\n    margin: 5px;\r\n}", ""]);
+exports.push([module.i, ".basket {\r\n    height: 80vh;\r\n    border: 2px solid black;\r\n}\r\n\r\n.main-container {\r\n    width: 100%;\r\n}\r\n\r\n.delete-icon {\r\n    text-align: right;\r\n}\r\n\r\n.add-button {\r\n    display: inline-block;\r\n    margin: 5px;\r\n}\r\n\r\n.main-container .share-button {\r\n    margin: 10px;\r\n}\r\n\r\n.modal-share-button {\r\n    margin-right: 50px;\r\n}\r\n\r\n.modal {\r\n    position: fixed;\r\n    top: 0;\r\n    left: 0;\r\n    height: 100%;\r\n    width: 100%;\r\n    max-width: 100%;\r\n    max-height: 100%;\r\n    background: rgba(0, 0, 0, 0.6);\r\n  }\r\n  \r\n  .modal-main {\r\n    position:fixed;\r\n    background: white;\r\n    border: 2px solid black;\r\n    border-radius: 25px;\r\n    width: 50%;\r\n    height: 20%;\r\n    top:50%;\r\n    left:50%;\r\n    transform: translate(-50%,-50%);\r\n  }\r\n  \r\n  .display-block {\r\n    display: block;\r\n  }\r\n  \r\n  .display-none {\r\n    display: none;\r\n  }\r\n\r\n  .share-email {\r\n      width: 80%;\r\n      margin: 30px;\r\n      margin-bottom: 10px;\r\n  }\r\n\r\n  .close-button {\r\n    position: absolute;\r\n    top: 0px;\r\n    right: 10px;\r\n    color: black;\r\n  }", ""]);
 // Exports
 module.exports = exports;
 
@@ -37746,7 +37746,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape */ "./src/components/Shape.js");
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Modal */ "./src/components/Modal.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -37774,6 +37775,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -37941,10 +37943,48 @@ var Home = /*#__PURE__*/function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "showModal", function () {
+      _this.setState({
+        show: true
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "hideModal", function () {
+      _this.setState({
+        show: false
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "handleEmail", function (e) {
+      _this.setState({
+        share_email: e.target.value
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "shareBasket", function () {
+      _this.hideModal();
+
+      var token = "Token " + localStorage.getItem('token');
+      var headers = {
+        'Authorization': token
+      };
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.post('http://localhost:8000/notifications/api/share/', {
+        email: _this.state.share_email
+      }, {
+        'headers': headers
+      }).then(function (res) {
+        console.log(res.data);
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    });
+
     _this.state = {
       items: [],
       basket_id: null,
-      data: null
+      data: null,
+      show: false,
+      share_email: null
     };
     _this.fileInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     return _this;
@@ -38026,7 +38066,29 @@ var Home = /*#__PURE__*/function (_React$Component) {
         onDrop: this.handleDrop,
         onDragOver: this.handleDragOver,
         style: "basket"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Basket"), this.props.isAuthenticated && items)));
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Basket"), this.props.isAuthenticated && items), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Modal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        show: this.state.show,
+        handleClose: this.hideModal
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "input-field share-email"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        id: "email",
+        type: "email",
+        className: "validate",
+        onChange: this.handleEmail
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
+        htmlFor: "email"
+      }, "Email")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        className: "btn waves-effect btn-small waves-light blue right modal-share-button",
+        onClick: this.shareBasket
+      }, "Share", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+        className: "material-icons right"
+      }, "send"))), this.props.isAuthenticated && react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        className: "btn waves-effect waves-light blue right share-button",
+        onClick: this.showModal
+      }, "Share", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+        className: "material-icons right"
+      }, "send"))));
     }
   }]);
 
@@ -38040,7 +38102,7 @@ var mapStateToProps = function mapStateToProps(state) {
   };
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_5__["connect"])(mapStateToProps)(Home));
+/* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_6__["connect"])(mapStateToProps)(Home));
 
 /***/ }),
 
@@ -38163,6 +38225,39 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["connect"])(mapStateToProps, mapDispatchToProps)(Login));
+
+/***/ }),
+
+/***/ "./src/components/Modal.js":
+/*!*********************************!*\
+  !*** ./src/components/Modal.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var Modal = function Modal(_ref) {
+  var handleClose = _ref.handleClose,
+      show = _ref.show,
+      children = _ref.children;
+  var showHideClassName = show ? "modal display-block" : "modal display-none";
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: showHideClassName
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
+    className: "modal-main"
+  }, children, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+    onClick: handleClose
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", {
+    className: "material-icons right close-button"
+  }, "close"))));
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (Modal);
 
 /***/ }),
 

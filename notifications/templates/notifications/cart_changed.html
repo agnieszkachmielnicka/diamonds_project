@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <h4>The changes are detected in following baskets:</h4>
+        <table  cellspacing="30">
+        {% for basket in baskets %}
+            <tr>
+                <th>Basket for user {{basket.user}}</th>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
