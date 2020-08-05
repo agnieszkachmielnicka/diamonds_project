@@ -1,0 +1,8 @@
+# HOW TO RUN APP
+
+* create python virtualenv
+* run pip install -r requirements.txt
+* run python manage.py runserver
+
+* on another terminal run cd frontend
+* run npm run watch

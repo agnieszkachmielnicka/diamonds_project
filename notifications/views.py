@@ -11,6 +11,8 @@ class ShareViewSet(APIView):
     def post(self, request):
         recipient = request.data['email']
         message = get_message(request, recipient)
+        print(message)
+        print(recipient)
         try:
             message.send(fail_silently=False)
         except smtplib.SMTPException:

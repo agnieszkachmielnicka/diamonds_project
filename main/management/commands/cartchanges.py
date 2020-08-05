@@ -20,8 +20,9 @@ class Command(BaseCommand):
         subject = "***Changes are detected***"
         try:
             mail_admins(subject, message=None, fail_silently=False, html_message=html_content)
-        except smtplib.SMTPException:
+        except smtplib.SMTPException as e:
             print("The email was't sent")
+            print(e.smtp_error)
         for basket in baskets:
             basket.has_changed = False
             basket.save()
